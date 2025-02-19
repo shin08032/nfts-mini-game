@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>เกมลากคำ Flowchart ลงขาย NFT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #1a0033, #4b0082);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .box {
+            width: 90%;
+            max-width: 300px;
+            height: 50px;
+            border: 2px dashed #bb86fc;
+            line-height: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 14px;
+        }
+        .box.correct { background-color: #00c853 !important; box-shadow: 0 0 15px #00c853; }
+        .box.incorrect { background-color: #d50000 !important; box-shadow: 0 0 15px #d50000; }
+        .arrow {
+            width: 15px;
+            height: 15px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg);
+            margin: 5px 0;
+        }
+        .word {
+            padding: 8px;
+            background: #bb86fc;
+            color: black;
+            border-radius: 5px;
+            cursor: grab;
+            margin: 5px;
+            display: inline-block;
+            box-shadow: 0px 0px 10px #bb86fc;
+            font-size: 12px;
+        }
+        button {
+            background: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: black;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+            box-shadow: 0px 0px 15px white;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+    <script>
+        let correctAnswers = {
+            "drop1": "สร้างกระเป๋าเงินคริปโต",
+            "drop2": "เลือกแพลตฟอร์ม NFT Marketplace",
+            "drop3": "สร้างและอัปโหลด NFT",
+            "drop4": "กำหนดราคาหรือวิธีขาย",
+            "drop5": "ลงขายและโปรโมต",
+            "drop6": "รอผู้ซื้อและทำธุรกรรม"
+        };
+        
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+        function drop(event, boxId) {
+            event.preventDefault();
+            let data = event.dataTransfer.getData("text");
+            let draggedElement = document.getElementById(data);
+            let dropBox = document.getElementById(boxId);
+            
+            if (dropBox.innerText === "______") {
+                dropBox.innerText = draggedElement.innerText;
+                dropBox.setAttribute("data-word-id", draggedElement.id);
+                draggedElement.parentNode.removeChild(draggedElement);
+            }
+        }
+        function removeWord(event, boxId) {
+            let dropBox = document.getElementById(boxId);
+            let wordContainer = document.getElementById("word-container");
+            let wordText = dropBox.innerText;
+            let wordId = dropBox.getAttribute("data-word-id");
+            
+            if (wordText !== "______") {
+                let newWordElement = document.createElement("span");
+                newWordElement.innerText = wordText;
+                newWordElement.classList.add("word");
+                newWordElement.draggable = true;
+                newWordElement.ondragstart = drag;
+                newWordElement.id = wordId;
+                wordContainer.appendChild(newWordElement);
+                
+                dropBox.innerText = "______";
+                dropBox.removeAttribute("data-word-id");
+            }
+        }
+        function checkAnswers() {
+            Object.keys(correctAnswers).forEach(boxId => {
+                let dropBox = document.getElementById(boxId);
+                if (dropBox.innerText === correctAnswers[boxId]) {
+                    dropBox.classList.add("correct");
+                    dropBox.classList.remove("incorrect");
+                } else {
+                    dropBox.classList.add("incorrect");
+                    dropBox.classList.remove("correct");
+                }
+            });
+        }
+        function resetGame() {
+            document.querySelectorAll(".box").forEach(box => {
+                box.innerText = "______";
+                box.classList.remove("correct", "incorrect");
+                box.removeAttribute("data-word-id");
+            });
+            let wordContainer = document.getElementById("word-container");
+            wordContainer.innerHTML = "";
+            Object.values(correctAnswers).forEach((word, index) => {
+                let newWordElement = document.createElement("span");
+                newWordElement.innerText = word;
+                newWordElement.classList.add("word");
+                newWordElement.draggable = true;
+                newWordElement.ondragstart = drag;
+                newWordElement.id = "word" + (index + 1);
+                wordContainer.appendChild(newWordElement);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>ลากขั้นตอนที่ถูกต้องมาเรียงใน Flowchart</h2>
+    <div class="flowchart" id="flowchart"></div>
+    <script>
+        for (let i = 1; i <= 6; i++) {
+            let div = document.createElement("div");
+            div.innerHTML = `<div class="box" id="drop${i}" ondrop="drop(event, 'drop${i}')" ondragover="allowDrop(event)" onclick="removeWord(event, 'drop${i}')">______</div>`;
+            document.getElementById("flowchart").appendChild(div);
+            if (i < 6) {
+                let arrow = document.createElement("div");
+                arrow.className = "arrow";
+                document.getElementById("flowchart").appendChild(arrow);
+            }
+        }
+    </script>
+    <h3>ลากขั้นตอนมาใส่ใน Flowchart:</h3>
+    <div id="word-container"></div>
+    <script>resetGame();</script>
+    <button onclick="checkAnswers()">ตรวจคำตอบ</button>
+    <button onclick="resetGame()">รีเซ็ต</button>
+</body>
+</html>
